@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+  php:
+    image: php:8.3-fpm
+    build: ./php/
+    container_name: invoice-manager-app
+    working_dir: /var/www/
+    volumes:
+      - ../:/var/www/
+      - composer:/var/www/.composer
+      - tinker:/var/www/.config
+      - ./php/zz-www.conf:/usr/local/etc/php-fpm.d/zz-www.conf
+    user: www-data
+    depends_on:
+      - mysql
+      - redis
+      - horizon
+    networks:
+      - invoice-manager
+
+  webserver:
+    image: nginx:alpine
+    container_name: invoice-manager-web
+    ports:
+      - "8000:80"
+    volumes:
+      - ../:/var/www/
+      - ./nginx/default.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - php
+    networks:
+      - invoice-manager
+
+  mysql:
+    image: mysql:8
+    container_name: invoice-manager-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: laravel
+    ports:
+      - "3306:3306"
+    volumes:
+      - invoice_manager_mysql_data:/var/lib/mysql
+    networks:
+      - invoice-manager
+
+  redis:
+    image: redis:7
+    container_name: invoice-manager-redis
+    ports:
+      - "6378:6379"
+    networks:
+      - invoice-manager
+
+  horizon:
+    image: php:8.3-fpm
+    container_name: invoice-manager-horizon
+    working_dir: /var/www
+    volumes:
+      - ../:/var/www/
+    command: php artisan horizon
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - invoice-manager
+
+volumes:
+  invoice_manager_mysql_data:
+  composer:
+  tinker:
+  redis:
+
+networks:
+  invoice-manager:
+    driver: bridge
