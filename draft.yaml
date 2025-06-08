@@ -1,0 +1,49 @@
+models:
+  User:
+    name: string
+    email: string unique
+    password: string
+    role: enum:admin,user
+    email_verified_at: timestamp nullable
+    remember_token: string nullable
+
+  PaymentFile:
+    id: id
+    file_name: string
+    path: string
+    status: enum:uploaded,processing,processed,failed
+    uploaded_at: timestamp
+    processed_at: timestamp nullable
+    user_id: id foreign:users nullable
+
+  Payment:
+    id: id
+    payment_file_id: id foreign:payment_files
+    customer_id : string
+    customer_email: string
+    customer_name: string
+    reference_number: string
+    payment_date: datetime
+    original_amount: decimal:15,2
+    original_currency: string:3
+    usd_amount: decimal:15,2 nullable
+    status: enum:unprocessed,processed,failed default:unprocessed
+    error_message: text nullable
+
+  Invoice:
+    id: id
+    customer_email: string
+    html_content: longtext
+    total_usd: decimal:15,2
+    sent_at: timestamp nullable
+
+  InvoicePayment:
+    invoice_id: id foreign:invoices
+    payment_id: id foreign:payments
+
+  ExchangeRate:
+    id: id
+    base_currency: string:3
+    target_currency: string:3
+    rate: decimal:15,6
+    fetched_at: timestamp

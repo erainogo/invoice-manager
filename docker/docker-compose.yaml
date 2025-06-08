@@ -9,7 +9,6 @@ services:
     volumes:
       - ../:/var/www/
       - composer:/var/www/.composer
-      - tinker:/var/www/.config
       - ./php/zz-www.conf:/usr/local/etc/php-fpm.d/zz-www.conf
     user: www-data
     depends_on:
@@ -40,9 +39,9 @@ services:
       MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_PASSWORD: secret
-      MYSQL_USER: laravel
+      MYSQL_USER: root
     ports:
-      - "3306:3306"
+      - "33060:3306"
     volumes:
       - invoice_manager_mysql_data:/var/lib/mysql
     networks:
@@ -51,8 +50,6 @@ services:
   redis:
     image: redis:7
     container_name: invoice-manager-redis
-    ports:
-      - "6378:6379"
     networks:
       - invoice-manager
 
@@ -62,7 +59,7 @@ services:
     working_dir: /var/www
     volumes:
       - ../:/var/www/
-    command: php artisan horizon
+    entrypoint: php /var/www/artisan horizon
     restart: always
     depends_on:
       - mysql

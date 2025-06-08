@@ -1,11 +1,8 @@
 <?php
 
+use App\Http\Controllers\PaymentFileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/test', function () {
-    return 'It works!';
-});
+Route::post('/admin/upload-payment-file', [PaymentFileController::class, 'upload'])
+    ->name('admin.upload-payment-file')
+    ->middleware(['auth']);

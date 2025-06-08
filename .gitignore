@@ -24,3 +24,7 @@ Homestead.yaml
 npm-debug.log
 Thumbs.db
 yarn-error.log
+.bash_history
+.blueprint
+.config/
+.lesshst
