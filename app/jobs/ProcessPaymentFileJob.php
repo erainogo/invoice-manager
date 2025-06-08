@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\PaymentFile;
 use App\Repositories\Contracts\PaymentUploadRepositoryInterface;
+use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -99,10 +100,7 @@ class ProcessPaymentFileJob implements ShouldQueue
             ->onQueue('payment-file-read-queue')
             ->dispatch();
 
-        // Optionally update the file with last_batch_id
-//        if ($this->file) {
-//            $this->file->update(['last_batch_id' => $batch->id]);
-//        }
+        $this->file?->update(['last_batch_id' => $batch->id]);
 
         Log::info("Dispatched batch ID {$batch->id} for file ID {$this->fileId}");
     }
