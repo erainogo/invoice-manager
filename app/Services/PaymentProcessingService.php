@@ -57,6 +57,7 @@ class PaymentProcessingService
         ];
 
         $data = [
+            'payment_file_id' => $paymentFileId,
             'customer_id' => $row['customer_id'],
             'customer_name' => $row['customer_name'],
             'customer_email' => $row['customer_email'],
