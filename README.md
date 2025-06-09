@@ -32,7 +32,7 @@ This spins up the following containers:
 - **php** (Laravel backend)
 - **webserver** (Nginx)
 - **mysql** (MySQL database)
-- **redis** (for queueing)
+- **redis** (for queueing and caching)
 - **horizon** (Laravel Horizon for job management)
 
 ### 3. Install Dependencies
@@ -152,11 +152,11 @@ You can configure your S3 credentials in `.env`.
 
 The application uses custom Docker configurations for optimal performance:
 
-## Dockerfile Features
+# Dockerfile Features
 
 dockerfile# FROM php:8.3-fpm
 
-# Large file upload settings
+# Large file upload settings in image
 - upload_max_filesize=200M
 - post_max_size=200M
 - memory_limit=512M
@@ -164,7 +164,6 @@ dockerfile# FROM php:8.3-fpm
 
 ## PHP-FPM Pool Configuration
 
-- ini[www]
 - pm = dynamic
 - pm.max_children = 50
 - pm.start_servers = 10
@@ -180,4 +179,4 @@ The application uses Mailtrap for email testing and notifications.
 
 - Sign up for a Mailtrap account
 - Create a new inbox in your Mailtrap dashboard
-- Copy the SMTP credentials to your .env file (as shown in step 5 above)
+- Copy the SMTP credentials to your .env file
