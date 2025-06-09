@@ -36,7 +36,6 @@ models:
     id: id
     customer_email: string
     html_content: longtext
-    total_usd: decimal:15,2
     sent_at: timestamp nullable
 
   InvoicePayment:

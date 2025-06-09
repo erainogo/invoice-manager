@@ -11,5 +11,4 @@ class DbPaymentUploadRepository extends BaseEloquentRepository implements Paymen
     {
         $this->model = $model;
     }
-
 }

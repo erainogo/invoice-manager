@@ -17,7 +17,6 @@ class Invoice extends Model
     protected $fillable = [
         'customer_email',
         'html_content',
-        'total_usd',
         'sent_at',
     ];
 
@@ -30,7 +29,6 @@ class Invoice extends Model
     {
         return [
             'id' => 'integer',
-            'total_usd' => 'decimal:2',
             'sent_at' => 'timestamp',
         ];
     }

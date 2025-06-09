@@ -27,7 +27,7 @@ class DailyPayoutCommand extends Command
     {
         $this->info("Starting daily payout process...");
 
-        $yesterday = Carbon::yesterday()->toDateString();
+        $yesterday = Carbon::today()->toDateString();
 
         $groupedPayments = $paymentRepository->getPaymentsGroupedByUser($yesterday);
 

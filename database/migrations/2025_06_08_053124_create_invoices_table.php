@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('customer_email');
             $table->longText('html_content');
-            $table->decimal('total_usd', 15, 2);
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
         });

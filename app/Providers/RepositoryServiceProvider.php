@@ -20,6 +20,16 @@ class RepositoryServiceProvider extends ServiceProvider
             'App\Repositories\Contracts\PaymentRepositoryInterface',
             'App\Repositories\DbPaymentRepository'
         );
+
+        $this->app->bind(
+            'App\Repositories\Contracts\InvoiceRepositoryInterface',
+            'App\Repositories\DbInvoiceRepository'
+        );
+
+        $this->app->bind(
+            'App\Repositories\Contracts\InvoicePaymentRepositoryInterface',
+            'App\Repositories\DbInvoicePaymentRepository'
+        );
     }
 
     /**

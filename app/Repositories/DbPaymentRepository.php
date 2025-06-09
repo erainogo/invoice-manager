@@ -35,6 +35,7 @@ class DbPaymentRepository extends BaseEloquentRepository implements PaymentRepos
         return $this->model
             ->whereIn('id',$paymentIds)
             ->select([
+                'id',
                 'payment_date',
                 'reference_number',
                 'original_amount',

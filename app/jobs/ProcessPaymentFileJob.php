@@ -99,9 +99,9 @@ class ProcessPaymentFileJob implements ShouldQueue
     {
         $batch = Bus::batch($jobs)
             ->allowFailures()
+            ->onQueue('payment-file-read-queue')
+            ->onConnection('redis')
             ->dispatch();
-
-        $this->file?->update(['last_batch_id' => $batch->id]);
 
         Log::info("Dispatched batch ID {$batch->id} for file ID {$this->fileId}");
     }
