@@ -1,6 +1,17 @@
 # Invoice Manager
 
-A Laravel-based system to manage and process CSV file uploads for payment records, run background jobs using Redis & Horizon, and generate daily payout summaries.
+**Invoice Manager** is a Laravel-based system for managing and processing CSV file uploads containing payment records. It supports both web and API interfaces, handles background jobs using Redis and Horizon, and generates daily payout summaries.
+
+CSV files are uploaded to **Amazon S3 using multipart upload**, making large file handling efficient and reliable.
+
+## 🔒 User Roles & Authentication
+
+The system supports two user roles:
+
+- **Admin users**: Manage files and users through a web interface powered by [Filament](https://filamentphp.com/).
+- **API users**: Upload and manage files via a secure REST API using [Laravel Sanctum](https://laravel.com/docs/sanctum/).
+
+Authentication is required for both user types.
 
 ---
 
