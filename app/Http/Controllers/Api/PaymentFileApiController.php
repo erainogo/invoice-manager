@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 class PaymentFileApiController extends Controller
 {
     use S3MultipartUploader;
+
     private PaymentUploadRepositoryInterface $paymentUploadRepository;
 
     function __construct(PaymentUploadRepositoryInterface $paymentUploadRepository)

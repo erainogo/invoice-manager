@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class PaymentFileController extends Controller
 {
     use S3MultipartUploader;
+
     private PaymentUploadRepositoryInterface $paymentUploadRepository;
 
     public function __construct(PaymentUploadRepositoryInterface $paymentUploadRepository)
