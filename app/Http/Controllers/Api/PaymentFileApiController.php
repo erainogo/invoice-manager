@@ -1,30 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Repositories\Contracts\PaymentUploadRepositoryInterface;
+use App\Http\Controllers\Controller;
 use App\Jobs\ProcessPaymentFileJob;
+use App\Repositories\Contracts\PaymentUploadRepositoryInterface;
 use App\Helpers\S3MultipartUploader;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class PaymentFileController extends Controller
+class PaymentFileApiController extends Controller
 {
     use S3MultipartUploader;
     private PaymentUploadRepositoryInterface $paymentUploadRepository;
 
-    public function __construct(PaymentUploadRepositoryInterface $paymentUploadRepository)
+    function __construct(PaymentUploadRepositoryInterface $paymentUploadRepository)
     {
         $this->paymentUploadRepository = $paymentUploadRepository;
     }
 
-    public function upload(Request $request): RedirectResponse
+    public function upload(Request $request): JsonResponse
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized.');
-        }
-
         $request->validate([
             'file' => 'required|file|mimes:csv,txt',
         ]);
@@ -42,14 +38,14 @@ class PaymentFileController extends Controller
         $success = $this->uploadAsParts($stream, $s3Path);
 
         if (! $success) {
-            return redirect()
-                ->back()
-                ->withErrors(['file' => 'Upload failed. Please try again.']);
+            return response()->json([
+                'message' => 'Upload failed. Internal server error.',
+            ], 500);
         }
 
         $paymentFile = $this->paymentUploadRepository->create([
             'file_name' => $uniqueName,
-            'user_id' => Auth::id(),
+            'user_id' => $request->user()->id,
             'path' => $s3Path,
             'status' => 'uploaded',
             'uploaded_at' => now(),
@@ -57,8 +53,9 @@ class PaymentFileController extends Controller
 
         ProcessPaymentFileJob::dispatch($paymentFile->id);
 
-        return redirect()
-            ->route('filament.admin.resources.payment-files.index')
-            ->with('success', 'File is uploaded and being processed.');
+        return response()->json([
+            'message' => 'File uploaded successfully and is being processed.',
+            'file_id' => $paymentFile->id,
+        ]);
     }
 }
