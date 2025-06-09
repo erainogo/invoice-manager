@@ -75,7 +75,7 @@ class PaymentProcessingService
         }
     }
 
-    public function processDailyPayouts($paymentIds, $email, $today): void
+    public function processDailyPayouts($paymentIds, $email, $yesterday): void
     {
         try {
             Log::info("sending email: " . json_encode($paymentIds));
@@ -85,7 +85,7 @@ class PaymentProcessingService
             $htmlInvoice = view('emails.invoice', [
                 'payments' => $payments,
                 'email' => $email,
-                'date' => $today,
+                'date' => $yesterday,
             ])->render();
 
             Mail::send([], [], function ($message) use ($email, $htmlInvoice) {

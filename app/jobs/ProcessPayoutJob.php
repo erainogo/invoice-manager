@@ -19,13 +19,13 @@ class ProcessPayoutJob implements ShouldQueue
 
     public $email;
 
-    public $today;
+    public $yesterday;
 
-    public function __construct($today, $email, $payment)
+    public function __construct($yesterday, $email, $payment)
     {
         $this->payment = $payment;
         $this->email = $email;
-        $this->today = $today;
+        $this->yesterday = $yesterday;
 
         $this->onQueue('payment-payout-processing-queue');
     }
@@ -34,6 +34,6 @@ class ProcessPayoutJob implements ShouldQueue
     {
         Log::info("{$this->email} processing has started");
 
-        $service->processDailyPayouts($this->payment, $this->email, $this->today);
+        $service->processDailyPayouts($this->payment, $this->email, $this->yesterday);
     }
 }

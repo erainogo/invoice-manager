@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel {
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:daily-payout-command')
-            ->daily();
+            ->dailyAt("01:00");
     }
 
     /**

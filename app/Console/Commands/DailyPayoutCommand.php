@@ -27,9 +27,9 @@ class DailyPayoutCommand extends Command
     {
         $this->info("Starting daily payout process...");
 
-        $today = Carbon::today()->toDateString();
+        $yesterday = Carbon::yesterday()->toDateString();
 
-        $groupedPayments = $paymentRepository->getPaymentsGroupedByUser($today);
+        $groupedPayments = $paymentRepository->getPaymentsGroupedByUser($yesterday);
 
         $jobCount = count($groupedPayments);
 
@@ -39,7 +39,7 @@ class DailyPayoutCommand extends Command
 
             $this->info("Dispatching payout job for $email with " . count($paymentIds) . " payments");
 
-            ProcessPayoutJob::dispatch($today, $email, $paymentIds);
+            ProcessPayoutJob::dispatch($yesterday, $email, $paymentIds);
         }
 
         $this->info("Total $jobCount daily payout update jobs dispatched.");
