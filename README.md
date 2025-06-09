@@ -1,61 +1,138 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Invoice Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based system to manage and process CSV file uploads for payment records, run background jobs using Redis & Horizon, and generate daily payout summaries.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🧰 Prerequisites
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Docker & Docker Compose
+- Laravel (already included in project)
+- CSV files containing payment data
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Setup & Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone the Repository
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone https://github.com/your-org/invoice-manager.git
+cd invoice-manager
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Start Docker Containers
 
-## Laravel Sponsors
+```bash
+docker-compose -f docker-compose.yml up --build -d
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+This spins up the following containers:
 
-### Premium Partners
+- **php** (Laravel backend)
+- **webserver** (Nginx)
+- **mysql** (MySQL database)
+- **redis** (for queueing)
+- **horizon** (Laravel Horizon for job management)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 3. Install Dependencies
 
-## Contributing
+```bash
+docker exec -it invoice-manager-app composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Set File Permissions
 
-## Code of Conduct
+```bash
+sudo chmod -R 777 storage bootstrap/cache
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Environment Setup
 
-## Security Vulnerabilities
+Copy `.env.example` to `.env`, then configure DB, Redis, etc.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cp .env.example .env
+docker exec -it invoice-manager-app php artisan key:generate
+```
 
-## License
+### 6. Run Migrations
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+docker exec -it invoice-manager-app php artisan migrate
+```
+
+---
+
+## 📬 API Usage
+
+### Upload a CSV File
+
+```bash
+curl -X POST http://localhost:8000/api/upload \
+  -H "Authorization: Bearer <your-api-token>" \
+  -F "file=@customer_transactions.csv"
+```
+
+Replace `<your-api-token>` with your actual token.
+
+---
+
+## ⚙️ Background Jobs
+
+The application uses Redis and Laravel Horizon to handle background processing of uploaded files.
+
+### Start Horizon (already started via Docker)
+
+```bash
+# Automatically runs in the 'horizon' service container:
+php artisan horizon
+```
+
+You can monitor Horizon at:
+
+```
+http://localhost:8000/horizon
+```
+
+### Jobs:
+
+- **ProcessPaymentFileJob**: Parses and processes uploaded CSV files.
+-   queue - payment-file-upload-queue
+- **ProcessPaymentRowJob**: Handles individual rows.
+-   queue - payment-file-read-queue
+- **UploadFileToS3MultipartJob**: (if used) handles large file uploads.
+-   queue - payment-payout-processing-queue
+
+---
+
+## ⏰ Scheduled Task
+
+The app includes a scheduled command to run daily:
+
+```php
+$schedule->command('app:daily-payout-command')->dailyAt("01:00");
+```
+
+---
+
+## 📂 File Storage
+
+Uploaded files are stored in S3 via multipart uploads.
+
+You can configure your S3 credentials in `.env`.
+
+---
+
+## 📈 Monitoring
+
+- Laravel Horizon is used for monitoring job queues.
+- Access it at: http://localhost:8000/horizon
+
+📧 Email Configuration
+The application uses Mailtrap for email testing and notifications.
+Setup Mailtrap
+
+Sign up for a Mailtrap account
+Create a new inbox in your Mailtrap dashboard
+Copy the SMTP credentials to your .env file (as shown in step 5 above)
