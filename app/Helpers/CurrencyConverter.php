@@ -7,7 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-trait CurrencyConverter {
+trait CurrencyConverter 
+{
     protected function getRate(string $base, string $target): float
     {
         $today = Carbon::now()->toDateString();
