@@ -130,14 +130,14 @@ You can configure your S3 credentials in `.env`.
 - Access it at: http://localhost:8000/horizon
 
 
-🔧 Docker Configuration
+## 🔧 Docker Configuration
+
 The application uses custom Docker configurations for optimal performance:
 Dockerfile Features
-dockerfile# Optimized for large file processing
-FROM php:8.3-fpm
 
-# PHP extensions for performance
-RUN docker-php-ext-install pdo_mysql zip intl pcntl
+dockerfile# Optimized for large file processing
+
+FROM php:8.3-fpm
 
 # Large file upload settings
 upload_max_filesize=200M
@@ -145,7 +145,7 @@ post_max_size=200M
 memory_limit=512M
 max_execution_time=300
 
-PHP-FPM Pool Configuration
+## PHP-FPM Pool Configuration
 
 ini[www]
 pm = dynamic
@@ -155,8 +155,9 @@ pm.min_spare_servers = 5
 pm.max_spare_servers = 10
 These settings ensure optimal handling of concurrent large file uploads and processing.
 
-📧 Email Configuration
+## 📧 Email Configuration
 The application uses Mailtrap for email testing and notifications.
+
 Setup Mailtrap
 
 Sign up for a Mailtrap account
