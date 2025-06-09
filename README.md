@@ -66,6 +66,22 @@ docker exec -it invoice-manager-app php artisan migrate
 
 ## 📬 API Usage
 
+### Login 
+
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "<your_email>", "password": "<your_password>"}'
+```
+
+### Upload a CSV File
+
+```bash
+curl -X POST http://localhost:8000/api/upload \
+  -H "Authorization: Bearer <your-api-token>" \
+  -F "file=@customer_transactions.csv"
+```
+
 ### Upload a CSV File
 
 ```bash
@@ -99,8 +115,10 @@ http://localhost:8000/horizon
 
 - **ProcessPaymentFileJob**: Parses and processes uploaded CSV files.
 -   queue - payment-file-upload-queue
+
 - **ProcessPaymentRowJob**: Handles individual rows.
 -   queue - payment-file-read-queue
+
 - **UploadFileToS3MultipartJob**: (if used) handles large file uploads.
 -   queue - payment-payout-processing-queue
 
