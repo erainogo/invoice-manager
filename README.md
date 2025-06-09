@@ -82,14 +82,6 @@ curl -X POST http://localhost:8000/api/upload \
   -F "file=@customer_transactions.csv"
 ```
 
-### Upload a CSV File
-
-```bash
-curl -X POST http://localhost:8000/api/upload \
-  -H "Authorization: Bearer <your-api-token>" \
-  -F "file=@customer_transactions.csv"
-```
-
 Replace `<your-api-token>` with your actual token.
 
 ---
