@@ -15,6 +15,7 @@ models:
     uploaded_at: timestamp
     processed_at: timestamp nullable
     user_id: id foreign:users nullable
+    last_batch_id: id string nullable
 
   Payment:
     id: id
@@ -29,6 +30,7 @@ models:
     usd_amount: decimal:15,2 nullable
     status: enum:unprocessed,processed,failed default:unprocessed
     error_message: text nullable
+    processed_at: timestamp nullable
 
   Invoice:
     id: id

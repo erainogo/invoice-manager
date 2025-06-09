@@ -21,6 +21,9 @@ class ProcessPaymentRowJob implements ShouldQueue
     {
         $this->row = $row;
         $this->paymentFileId = $paymentFileId;
+
+        $this->onQueue('payment-file-read-queue');
+        $this->onConnection('redis');
     }
 
     public function handle(PaymentProcessingService $service): void

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\Contracts\PaymentRepositoryInterface;
 use App\Helpers\CurrencyConverter;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class PaymentProcessingService
@@ -74,4 +75,28 @@ class PaymentProcessingService
         }
     }
 
+    public function processDailyPayouts($paymentIds, $email, $today): void
+    {
+        try {
+            Log::info("sending email: " . json_encode($paymentIds));
+
+            $payments = $this->paymentRepository->getPaymentsByIds($paymentIds);
+
+            $htmlInvoice = view('emails.invoice', [
+                'payments' => $payments,
+                'email' => $email,
+                'date' => $today,
+            ])->render();
+
+            Mail::send([], [], function ($message) use ($email, $htmlInvoice) {
+                $message->to($email)
+                    ->subject('Customer Daily Invoice')
+                    ->html($htmlInvoice);
+            });
+
+            $this->paymentRepository->updatePayouts($paymentIds);
+        } catch (\Exception $e) {
+            Log::error("Failed to send invoice to $email: " . $e->getMessage());
+        }
+    }
 }

@@ -220,6 +220,14 @@ return [
                 'processes' => 20,
                 'tries' => 3,
             ],
+
+            'supervisor-3' => [
+                'connection' => 'redis',
+                'queue' => ['payment-payout-processing-queue'],
+                'balance' => 'size',
+                'processes' => 20,
+                'tries' => 3,
+            ],
         ],
     ],
 ];

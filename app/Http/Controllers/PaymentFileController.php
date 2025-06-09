@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Repositories\Contracts\PaymentUploadRepositoryInterface;
 use Aws\S3\S3Client;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Jobs\ProcessPaymentFileJob;
@@ -29,12 +28,15 @@ class PaymentFileController extends Controller
         $file = $request->file('file');
         $localPath = $file->store('/temp'); // stored locally
         $filename = $file->getClientOriginalName();
-        $s3Path = 'payments/' . uniqid() . '-' . $filename;
+        $uniqueName = uniqid() . '-' . $filename;
 
-        // we can't really use separate worker for upload the file to s3 because we can't access the file from the worker server,
+        $s3Path = 'payments/' . $uniqueName;
+
+        // we can't really use separate worker for upload the file to s3 because,
+        // we can't access the request file from the worker server,
         // but we can do multipart upload using aws sdk.
         $paymentFile = $this->paymentUploadRepository->create([
-            'file_name' => $filename,
+            'file_name' => $uniqueName,
             'user_id' => Auth::id(),
             'path' => $s3Path,
             'status' => 'uploaded',
@@ -94,10 +96,7 @@ class PaymentFileController extends Controller
             ]);
 
             // Dispatch processing job after upload
-            ProcessPaymentFileJob::dispatch($paymentFile->id)
-                ->onConnection('redis')
-                ->onQueue('payment-file-upload-queue');
-
+            ProcessPaymentFileJob::dispatch($paymentFile->id);
         } catch (\Exception $e) {
             $s3->abortMultipartUpload([
                 'Bucket'   => $bucket,

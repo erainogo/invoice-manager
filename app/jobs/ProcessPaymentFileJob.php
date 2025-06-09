@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\PaymentFile;
 use App\Repositories\Contracts\PaymentUploadRepositoryInterface;
-use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,6 +28,9 @@ class ProcessPaymentFileJob implements ShouldQueue
     public function __construct(int $fileId)
     {
         $this->fileId = $fileId;
+
+        $this->onQueue('payment-file-upload-queue');
+        $this->onConnection('redis');
     }
 
     /**
@@ -53,6 +55,7 @@ class ProcessPaymentFileJob implements ShouldQueue
 
         if (!$stream) {
             Log::warning("Failed to get stream for file ID {$this->fileId}");
+
             return;
         }
 
@@ -96,8 +99,6 @@ class ProcessPaymentFileJob implements ShouldQueue
     {
         $batch = Bus::batch($jobs)
             ->allowFailures()
-            ->onConnection('redis')
-            ->onQueue('payment-file-read-queue')
             ->dispatch();
 
         $this->file?->update(['last_batch_id' => $batch->id]);
