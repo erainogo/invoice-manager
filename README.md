@@ -4,6 +4,8 @@
 
 CSV files are uploaded to **Amazon S3 using multipart upload**, making large file handling efficient and reliable.
 
+Tested with 100MB file uploads
+
 ## 🔒 User Roles & Authentication
 
 The system supports two user roles:
