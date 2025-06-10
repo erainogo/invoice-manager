@@ -121,10 +121,10 @@ http://localhost:8000/horizon
 - **ProcessPaymentFileJob**: Parses and processes uploaded CSV files.
 -   queue - payment-file-upload-queue
 
-- **ProcessPaymentRowJob**: Handles individual rows.
--   queue - payment-file-read-queue
+- **ProcessPaymentRowJob**: Handles individual csv rows.
+-   queue - payment-file-read-queue (executed as job batches)
 
-- **UploadFileToS3MultipartJob**: (if used) handles large file uploads.
+- **ProcessPayoutJob**: handles payouts and send emails.
 -   queue - payment-payout-processing-queue
 
 ---
