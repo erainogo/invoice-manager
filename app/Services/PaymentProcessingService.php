@@ -79,8 +79,8 @@ class PaymentProcessingService
         }
 
         try {
-            // $rate = $this->getCurrencyRate($row['currency'], 'USD');
-            // $data['usd_amount'] = $row['amount'] * $rate;
+//            $rate = $this->getRate($row['currency'], 'USD');
+//            $data['usd_amount'] = $row['amount'] * $rate;
 
             $this->paymentRepository->updateOrCreate($lookup, $data);
 
